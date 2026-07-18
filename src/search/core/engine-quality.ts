@@ -50,6 +50,7 @@ const ENGINE_QUALITY: Record<string, EngineQualityTier> = {
   wikipedia: 'high',
   mdn: 'high',
   stackoverflow: 'high',
+  'crates-io': 'high',
   bing: 'medium',
   bing_news: 'medium',
   duckduckgo: 'medium',
