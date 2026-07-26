@@ -5,7 +5,10 @@ up, how to propose changes, and the contribution terms.
 
 ## Development setup
 
-Requires Node.js ≥ 20.
+Requires Node.js 20, 22, or 24 (see `.nvmrc` for the exact version this repo is
+tested against; `nvm use` / `mise` will pick it up automatically — mise's
+`idiomatic_version_file_enable_tools` config already honors `.nvmrc` with no
+project-local mise config needed).
 
 ```bash
 npm install
@@ -16,6 +19,30 @@ npm run lint         # tsc --noEmit
 ```
 
 `npm run dev` runs the CLI from source via `tsx`.
+
+### Two install-time traps worth knowing about
+
+- **Node ≥ 26 breaks `better-sqlite3` with a `NODE_MODULE_VERSION` mismatch,
+  not a real test failure.** The pinned `better-sqlite3` release only ships
+  prebuilt binaries through Node 24's ABI. Running the suite under a newer
+  ambient Node (e.g. a `mise`/`nvm` default of 26) silently falls back to a
+  stale native build and turns into a wall of *unrelated-looking* test
+  failures — every one of them a `better-sqlite3` load error, not an actual
+  regression. Use the pinned version in `.nvmrc` (`engines.node` in
+  `package.json` also documents the ceiling: `>=20 <26`).
+- **A system-wide (Homebrew) `vips` install breaks `sharp` for anyone on
+  macOS.** `sharp` (pulled in transitively via `@huggingface/transformers`)
+  detects a global `libvips` via `pkg-config` and prefers building against it
+  over using its own prebuilt binary — but that from-source build needs
+  `node-addon-api`, which isn't a direct dependency here, so `npm ci` fails
+  with `sharp: Please add node-addon-api to your dependencies`. If you have
+  `vips` installed via Homebrew, set `SHARP_IGNORE_GLOBAL_LIBVIPS=1` before
+  installing:
+  ```bash
+  SHARP_IGNORE_GLOBAL_LIBVIPS=1 npm ci
+  ```
+  This isn't Node-version-specific — it reproduces on any supported Node once
+  `brew install vips` is present on the machine.
 
 ## Proposing changes
 

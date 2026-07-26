@@ -21,6 +21,8 @@ wigolo doctor --fix  # repairs the known failure classes automatically
 | Everything fails behind a corporate proxy | Set `USE_PROXY=true` and `PROXY_URL` (credentials go to the OS keychain, not disk). See [configuration](./configuration.md#fetch-and-browser-engine). |
 | A domain that used to work is misbehaving | wigolo learns per-domain fetch routing; a site redesign can invalidate what it learned. `wigolo tune show <domain>` to inspect, `wigolo tune reset <domain>` to relearn. |
 | A watch job never fires | Watch checks run only while a daemon (`wigolo serve`) or MCP session is alive — a one-shot CLI call registers jobs but can't schedule them. |
+| `npm test` reports hundreds of unrelated-looking failures, all touching the cache/store layer | Almost certainly Node ≥ 26: the pinned `better-sqlite3` release has no prebuilt binary for that ABI, so it silently loads a mismatched native build (`NODE_MODULE_VERSION` error) instead of failing to install. Use the version pinned in `.nvmrc` (Node 20–24) and reinstall. |
+| `npm ci` / `npm install` fails with `sharp: Please add node-addon-api to your dependencies` | You have a system-wide `vips` (e.g. `brew install vips` on macOS). `sharp` detects it via `pkg-config` and tries to build against it instead of using its prebuilt binary. Run `SHARP_IGNORE_GLOBAL_LIBVIPS=1 npm ci` instead — see [CONTRIBUTING.md](../CONTRIBUTING.md#two-install-time-traps-worth-knowing-about). |
 
 ## blocked_by_challenge
 
