@@ -1,0 +1,862 @@
+# Instincts generated from https://github.com/josephkehan-prog/wigolo
+# Generated: 2026-07-26T09:35:28.305Z
+# Version: 2.0
+# NOTE: This file supplements (does not replace) any existing curated instincts.
+# High-confidence manually curated instincts should be preserved alongside these.
+
+---
+id: wigolo-commit-length
+trigger: "when writing a commit message"
+confidence: 0.6
+domain: git
+source: repo-analysis
+source_repo: https://github.com/josephkehan-prog/wigolo
+---
+
+# Wigolo Commit Length
+
+## Action
+
+Write moderate-length commit messages (~68 characters)
+
+## Evidence
+
+- Average commit message length: 68 chars
+- Based on 76 commits
+
+---
+id: wigolo-naming-files
+trigger: "when creating a new file"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/josephkehan-prog/wigolo
+---
+
+# Wigolo Naming Files
+
+## Action
+
+Use camelCase naming convention
+
+## Evidence
+
+- Analyzed file naming patterns in repository
+- Dominant pattern: camelCase
+
+---
+id: wigolo-import-relative
+trigger: "when importing modules"
+confidence: 0.75
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/josephkehan-prog/wigolo
+---
+
+# Wigolo Import Relative
+
+## Action
+
+Use relative imports for project files
+
+## Evidence
+
+- Import analysis shows relative import pattern
+- Example: import { x } from '../lib/x'
+
+---
+id: wigolo-export-style
+trigger: "when exporting from a module"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/josephkehan-prog/wigolo
+---
+
+# Wigolo Export Style
+
+## Action
+
+Prefer named exports
+
+## Evidence
+
+- Export pattern analysis
+- Dominant style: named
+
+---
+id: wigolo-arch-type-based
+trigger: "when adding new code"
+confidence: 0.8
+domain: architecture
+source: repo-analysis
+source_repo: https://github.com/josephkehan-prog/wigolo
+---
+
+# Wigolo Arch Type Based
+
+## Action
+
+Place code in the appropriate type folder (components/, services/, utils/, etc.)
+
+## Evidence
+
+- Type-based module organization detected
+- Folders: cache, cli, crawl, daemon, embedding
+
+---
+id: wigolo-test-separate
+trigger: "when writing tests"
+confidence: 0.8
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/josephkehan-prog/wigolo
+---
+
+# Wigolo Test Separate
+
+## Action
+
+Place tests in the tests/ or __tests__/ directory, mirroring src structure
+
+## Evidence
+
+- Separate test directory pattern detected
+- Tests live in dedicated test folders
+
+---
+id: wigolo-test-framework
+trigger: "when writing tests"
+confidence: 0.9
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/josephkehan-prog/wigolo
+---
+
+# Wigolo Test Framework
+
+## Action
+
+Use vitest as the test framework
+
+## Evidence
+
+- Test framework detected: vitest
+- File pattern: *.test.ts
+
+---
+id: wigolo-test-naming
+trigger: "when creating a test file"
+confidence: 0.85
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/josephkehan-prog/wigolo
+---
+
+# Wigolo Test Naming
+
+## Action
+
+Name test files using the pattern: *.test.ts
+
+## Evidence
+
+- File pattern: *.test.ts
+- Consistent across test files
+
+---
+id: wigolo-test-mocking
+trigger: "when mocking dependencies in tests"
+confidence: 0.75
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/josephkehan-prog/wigolo
+---
+
+# Wigolo Test Mocking
+
+## Action
+
+Use vi.mock for mocking
+
+## Evidence
+
+- Mocking pattern detected: vi.mock
+- Consistent across test files
+
+---
+id: wigolo-test-types
+trigger: "when planning tests for a feature"
+confidence: 0.7
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/josephkehan-prog/wigolo
+---
+
+# Wigolo Test Types
+
+## Action
+
+Write unit, integration, e2e tests to match project standards
+
+## Evidence
+
+- Test types detected: unit, integration, e2e
+- Coverage config: no
+
+---
+id: wigolo-workflow-database-migration
+trigger: "when modifying the database schema or adding tables"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/josephkehan-prog/wigolo
+---
+
+# Wigolo Workflow Database Migration
+
+## Action
+
+Follow the database-migration workflow:
+1. Create migration file
+2. Update schema definitions
+3. Generate/update types
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: migrations/*, **/types.ts
+
+---
+id: wigolo-workflow-feature-development
+trigger: "when implementing a new feature"
+confidence: 0.9
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/josephkehan-prog/wigolo
+---
+
+# Wigolo Workflow Feature Development
+
+## Action
+
+Follow the feature-development workflow:
+1. Add feature implementation
+2. Add tests for feature
+3. Update documentation
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~8x per month
+- Files: src/fetch/*, tests/unit/fetch/*, src/*
+
+---
+id: wigolo-workflow-feature-development-with-tests
+trigger: "when doing feature development with tests"
+confidence: 0.75
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/josephkehan-prog/wigolo
+---
+
+# Wigolo Workflow Feature Development With Tests
+
+## Action
+
+Follow the feature-development-with-tests workflow:
+1. Implement feature logic in one or more src/ files.
+2. Update or create src/types.ts if new types or fields are introduced.
+3. Add or update relevant tests in tests/unit/ and/or tests/integration/.
+4. Optionally update documentation or related files.
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~5x per month
+- Files: src/**/*.ts, src/types.ts, tests/unit/**/*.test.ts
+
+---
+id: wigolo-workflow-bugfix-with-regression-test
+trigger: "when doing bugfix with regression test"
+confidence: 0.8
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/josephkehan-prog/wigolo
+---
+
+# Wigolo Workflow Bugfix With Regression Test
+
+## Action
+
+Follow the bugfix-with-regression-test workflow:
+1. Update the relevant src/ file(s) to fix the bug.
+2. Add or update a test in tests/unit/ or tests/integration/ to cover the bug scenario.
+3. Commit both code and test changes together.
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~6x per month
+- Files: src/**/*.ts, tests/unit/**/*.test.ts, tests/integration/**/*.test.ts
+
+---
+id: wigolo-workflow-refactor-with-test-updates
+trigger: "when doing refactor with test updates"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/josephkehan-prog/wigolo
+---
+
+# Wigolo Workflow Refactor With Test Updates
+
+## Action
+
+Follow the refactor-with-test-updates workflow:
+1. Refactor logic in src/ files.
+2. Update or refactor related tests in tests/unit/ and/or tests/integration/.
+3. Ensure all tests pass after the refactor.
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: src/**/*.ts, tests/unit/**/*.test.ts, tests/integration/**/*.test.ts
+
+---
+id: wigolo-workflow-ci-pipeline-update
+trigger: "when doing ci pipeline update"
+confidence: 0.7
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/josephkehan-prog/wigolo
+---
+
+# Wigolo Workflow Ci Pipeline Update
+
+## Action
+
+Follow the ci-pipeline-update workflow:
+1. Edit .github/workflows/ci.yml to add, remove, or modify jobs.
+2. Optionally update related documentation or test assertions.
+3. Commit and push to trigger CI runs.
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~4x per month
+- Files: .github/workflows/ci.yml
+
+---
+id: wigolo-workflow-dependency-update-or-revert
+trigger: "when doing dependency update or revert"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/josephkehan-prog/wigolo
+---
+
+# Wigolo Workflow Dependency Update Or Revert
+
+## Action
+
+Follow the dependency-update-or-revert workflow:
+1. Edit package.json and package-lock.json to bump or revert a dependency version.
+2. Test the build on supported Node versions.
+3. Commit both files together.
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: package.json, package-lock.json
+
+---
+id: wigolo-workflow-release-version-bump
+trigger: "when doing release version bump"
+confidence: 0.55
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/josephkehan-prog/wigolo
+---
+
+# Wigolo Workflow Release Version Bump
+
+## Action
+
+Follow the release-version-bump workflow:
+1. Update version numbers in package.json, package-lock.json, and all relevant pyproject.toml files.
+2. Commit all version bumps together.
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~1x per month
+- Files: package.json, package-lock.json, packages/*/pyproject.toml
+
+---
+id: wigolo-workflow-ssrf-guard-hardening-with-tests
+trigger: "when doing ssrf guard hardening with tests"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/josephkehan-prog/wigolo
+---
+
+# Wigolo Workflow Ssrf Guard Hardening With Tests
+
+## Action
+
+Follow the ssrf-guard-hardening-with-tests workflow:
+1. Update SSRF guard logic in src/fetch/, src/watch/, or related files.
+2. Add or update tests in tests/unit/fetch/, tests/watch/ to cover new SSRF scenarios.
+3. Commit both logic and test changes together.
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: src/fetch/**/*.ts, src/watch/**/*.ts, tests/unit/fetch/**/*.test.ts
+
+---
+id: wigolo-workflow-merge-main-into-feature-branch
+trigger: "when doing merge main into feature branch"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/josephkehan-prog/wigolo
+---
+
+# Wigolo Workflow Merge Main Into Feature Branch
+
+## Action
+
+Follow the merge-main-into-feature-branch workflow:
+1. Merge main into the feature branch.
+2. Resolve any merge conflicts.
+3. Commit the merged and resolved files.
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: *
+
+---
+id: wigolo-naming-files-camelCase
+trigger: "When creating a new file"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: josephkehan-prog/wigolo
+---
+
+# Wigolo Naming Files CamelCase
+
+## Action
+
+Name the file using camelCase
+
+## Evidence
+
+- Pattern in codeStyle.namingConventions.files
+- Observed in src/fetch/hydration-probe.ts
+
+---
+id: wigolo-naming-functions-camelCase
+trigger: "When defining a new function"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: josephkehan-prog/wigolo
+---
+
+# Wigolo Naming Functions CamelCase
+
+## Action
+
+Name the function using camelCase
+
+## Evidence
+
+- Pattern in codeStyle.namingConventions.functions
+
+---
+id: wigolo-naming-classes-PascalCase
+trigger: "When defining a new class"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: josephkehan-prog/wigolo
+---
+
+# Wigolo Naming Classes PascalCase
+
+## Action
+
+Name the class using PascalCase
+
+## Evidence
+
+- Pattern in codeStyle.namingConventions.classes
+
+---
+id: wigolo-naming-constants-SCREAMING_SNAKE_CASE
+trigger: "When defining a constant"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: josephkehan-prog/wigolo
+---
+
+# Wigolo Naming Constants SCREAMING_SNAKE_CASE
+
+## Action
+
+Name the constant using SCREAMING_SNAKE_CASE
+
+## Evidence
+
+- Pattern in codeStyle.namingConventions.constants
+
+---
+id: wigolo-imports-relative
+trigger: "When importing modules"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: josephkehan-prog/wigolo
+---
+
+# Wigolo Imports Relative
+
+## Action
+
+Use relative import paths
+
+## Evidence
+
+- Pattern in codeStyle.importStyle
+- Seen in src/fetch/hydration-probe.ts
+
+---
+id: wigolo-exports-named
+trigger: "When exporting functions or classes"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: josephkehan-prog/wigolo
+---
+
+# Wigolo Exports Named
+
+## Action
+
+Use named exports
+
+## Evidence
+
+- Pattern in codeStyle.exportStyle
+
+---
+id: wigolo-testing-vitest
+trigger: "When writing tests"
+confidence: 0.9
+domain: testing
+source: repo-analysis
+source_repo: josephkehan-prog/wigolo
+---
+
+# Wigolo Testing Vitest
+
+## Action
+
+Use the Vitest framework
+
+## Evidence
+
+- Pattern in testing.framework
+- Seen in tests/unit/fetch/settle.test.ts
+
+---
+id: wigolo-testing-file-pattern
+trigger: "When naming test files"
+confidence: 0.9
+domain: testing
+source: repo-analysis
+source_repo: josephkehan-prog/wigolo
+---
+
+# Wigolo Testing File Pattern
+
+## Action
+
+Use the *.test.ts suffix
+
+## Evidence
+
+- Pattern in testing.filePattern
+- Seen in tests/unit/fetch/settle.test.ts
+
+---
+id: wigolo-testing-mocking-vi-mock
+trigger: "When mocking modules in tests"
+confidence: 0.9
+domain: testing
+source: repo-analysis
+source_repo: josephkehan-prog/wigolo
+---
+
+# Wigolo Testing Mocking Vi Mock
+
+## Action
+
+Use vi.mock for mocking
+
+## Evidence
+
+- Pattern in testing.mockingStyle
+
+---
+id: wigolo-testing-types-unit-integration-e2e
+trigger: "When categorizing tests"
+confidence: 0.85
+domain: testing
+source: repo-analysis
+source_repo: josephkehan-prog/wigolo
+---
+
+# Wigolo Testing Types Unit Integration E2e
+
+## Action
+
+Organize tests as unit, integration, or e2e
+
+## Evidence
+
+- Pattern in testing.testTypes
+
+---
+id: wigolo-commit-prefixes
+trigger: "When writing a commit message"
+confidence: 0.9
+domain: git
+source: repo-analysis
+source_repo: josephkehan-prog/wigolo
+---
+
+# Wigolo Commit Prefixes
+
+## Action
+
+Prefix the message with type: fix, feat, docs, test, ci, or refactor
+
+## Evidence
+
+- Pattern in commits.prefixes
+- Seen in commit: fix(fetch): settlePage tears down racers on abort path
+- Seen in commit: feat(fetch): shared settlePage with probe + stability hybrid gate
+
+---
+id: wigolo-commit-format-scope
+trigger: "When writing a commit message"
+confidence: 0.9
+domain: git
+source: repo-analysis
+source_repo: josephkehan-prog/wigolo
+---
+
+# Wigolo Commit Format Scope
+
+## Action
+
+Use the format: type(scope): message
+
+## Evidence
+
+- Pattern in commits.examples
+- Seen in commit: test(fetch): SPA settle corpus fixture server
+
+---
+id: wigolo-commit-length
+trigger: "When writing a commit message"
+confidence: 0.8
+domain: git
+source: repo-analysis
+source_repo: josephkehan-prog/wigolo
+---
+
+# Wigolo Commit Length
+
+## Action
+
+Keep the commit message concise, around 68 characters on average
+
+## Evidence
+
+- Pattern in commits.averageLength
+
+---
+id: wigolo-feature-development-with-tests
+trigger: "When developing a new feature or major capability"
+confidence: 0.95
+domain: workflow
+source: repo-analysis
+source_repo: josephkehan-prog/wigolo
+---
+
+# Wigolo Feature Development With Tests
+
+## Action
+
+Implement feature logic in src/, update/create src/types.ts if needed, add/update tests in tests/unit/ and/or tests/integration/, optionally update docs
+
+## Evidence
+
+- Workflow: feature-development-with-tests
+- Seen in commit: feat(fetch): shared settlePage with probe + stability hybrid gate
+- Pattern in files: src/fetch/hydration-probe.ts, src/types.ts, tests/unit/fetch/settle.test.ts
+
+---
+id: wigolo-bugfix-with-regression-test
+trigger: "When fixing a bug"
+confidence: 0.9
+domain: workflow
+source: repo-analysis
+source_repo: josephkehan-prog/wigolo
+---
+
+# Wigolo Bugfix With Regression Test
+
+## Action
+
+Update relevant src/ files to fix the bug, add or update a test in tests/unit/ or tests/integration/ to cover the bug scenario, commit both code and test changes together
+
+## Evidence
+
+- Workflow: bugfix-with-regression-test
+- Seen in commit: fix(fetch): settlePage tears down racers on abort path
+- Pattern in files: src/fetch/settle.ts, tests/unit/fetch/settle.test.ts
+
+---
+id: wigolo-refactor-with-test-updates
+trigger: "When refactoring or restructuring code"
+confidence: 0.85
+domain: workflow
+source: repo-analysis
+source_repo: josephkehan-prog/wigolo
+---
+
+# Wigolo Refactor With Test Updates
+
+## Action
+
+Refactor logic in src/ files, update or refactor related tests in tests/unit/ and/or tests/integration/, ensure all tests pass after the refactor
+
+## Evidence
+
+- Workflow: refactor-with-test-updates
+- Seen in commit: refactor(fetch): both browser paths settle via shared settlePage
+
+---
+id: wigolo-ci-pipeline-update
+trigger: "When updating CI coverage, adding new platforms, or fixing CI failures"
+confidence: 0.9
+domain: workflow
+source: repo-analysis
+source_repo: josephkehan-prog/wigolo
+---
+
+# Wigolo Ci Pipeline Update
+
+## Action
+
+Edit .github/workflows/ci.yml to add, remove, or modify jobs, optionally update related documentation or test assertions, commit and push to trigger CI runs
+
+## Evidence
+
+- Workflow: ci-pipeline-update
+- Seen in commit: ci: add clean-machine smoke that exercises every dependency per PR
+
+---
+id: wigolo-dependency-update-or-revert
+trigger: "When a dependency needs to be updated or reverted"
+confidence: 0.9
+domain: workflow
+source: repo-analysis
+source_repo: josephkehan-prog/wigolo
+---
+
+# Wigolo Dependency Update Or Revert
+
+## Action
+
+Edit package.json and package-lock.json to bump or revert a dependency version, test the build on supported Node versions, commit both files together
+
+## Evidence
+
+- Workflow: dependency-update-or-revert
+- Pattern in files: package.json, package-lock.json
+
+---
+id: wigolo-release-version-bump
+trigger: "When preparing a new release"
+confidence: 0.95
+domain: workflow
+source: repo-analysis
+source_repo: josephkehan-prog/wigolo
+---
+
+# Wigolo Release Version Bump
+
+## Action
+
+Update version numbers in package.json, package-lock.json, and all relevant pyproject.toml files, commit all version bumps together
+
+## Evidence
+
+- Workflow: release-version-bump
+- Pattern in files: package.json, sdks/typescript/package.json, sdks/python/pyproject.toml
+
+---
+id: wigolo-ssrf-guard-hardening-with-tests
+trigger: "When strengthening SSRF protections or fixing SSRF-related issues"
+confidence: 0.9
+domain: workflow
+source: repo-analysis
+source_repo: josephkehan-prog/wigolo
+---
+
+# Wigolo Ssrf Guard Hardening With Tests
+
+## Action
+
+Update SSRF guard logic in src/fetch/, src/watch/, or related files, add or update tests in tests/unit/fetch/, tests/watch/ to cover new SSRF scenarios, commit both logic and test changes together
+
+## Evidence
+
+- Workflow: ssrf-guard-hardening-with-tests
+- Pattern in files: src/fetch/**/*.ts, tests/unit/fetch/**/*.test.ts
+
+---
+id: wigolo-merge-main-into-feature-branch
+trigger: "When a feature branch needs to be rebased or updated with the latest main changes"
+confidence: 0.85
+domain: workflow
+source: repo-analysis
+source_repo: josephkehan-prog/wigolo
+---
+
+# Wigolo Merge Main Into Feature Branch
+
+## Action
+
+Merge main into the feature branch, resolve any merge conflicts, commit the merged and resolved files
+
+## Evidence
+
+- Workflow: merge-main-into-feature-branch
+- Seen in commit: Merge remote-tracking branch 'origin/main' into feat/spa-settle-overhaul
+
