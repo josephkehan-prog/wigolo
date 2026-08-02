@@ -12,6 +12,7 @@ packaging/binary/dist/
 *.db
 *.db-journal
 *.db-wal
+*.db-shm
 
 # wigolo data
 .wigolo/
