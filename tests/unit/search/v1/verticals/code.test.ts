@@ -23,11 +23,11 @@ describe('getCodeEngines', () => {
     _resetCodeEnginesForTest();
   });
 
-  it('returns six entries by default (github-code, stackoverflow, devdocs, duckduckgo, mdn, crates-io)', () => {
-    expect(getCodeEngines()).toHaveLength(6);
+  it('returns seven entries by default (github-code, stackoverflow, devdocs, duckduckgo, npm-registry, mdn, crates-io)', () => {
+    expect(getCodeEngines()).toHaveLength(7);
   });
 
-  it('lists github-code, stackoverflow, devdocs, duckduckgo, mdn, crates-io (preserving names)', () => {
+  it('lists github-code, stackoverflow, devdocs, duckduckgo, npm-registry, mdn, crates-io (preserving names)', () => {
     const names = getCodeEngines().map((e) => e.engine.name).sort();
     expect(names).toEqual([
       'crates-io',
@@ -35,6 +35,7 @@ describe('getCodeEngines', () => {
       'duckduckgo',
       'github-code',
       'mdn',
+      'npm-registry',
       'stackoverflow',
     ]);
   });
