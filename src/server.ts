@@ -13,6 +13,7 @@ import { SmartRouter, type HttpClient } from './fetch/router.js';
 import { MultiBrowserPool } from './fetch/browser-pool.js';
 import { closeDaemonBrowser } from './fetch/playwright-tier.js';
 import { httpFetch } from './fetch/http-client.js';
+import { sweepStaleTempProfiles } from './fetch/profile-copy.js';
 import { initDatabase, closeDatabase } from './cache/db.js';
 import { handleFetch } from './tools/fetch.js';
 import { handleSearch } from './tools/search.js';
@@ -109,6 +110,13 @@ export async function initSubsystems(): Promise<Subsystems> {
   const httpClient: HttpClient = {
     fetch: (url, options) => httpFetch(url, options),
   };
+  // A run that died between copying the Chrome profile and cleaning the copy up
+  // leaves a full profile in tmp — the one case the caller-owned cleanup in
+  // profile-copy.ts cannot cover. Sweep those before serving. Best-effort: it
+  // never throws, and it only touches copies older than an hour, so a
+  // concurrently-fetching wigolo is never disturbed.
+  await sweepStaleTempProfiles();
+
   const browserPool = new MultiBrowserPool({
     browserTypes: config.browserTypes,
     selectionStrategy: 'round-robin',

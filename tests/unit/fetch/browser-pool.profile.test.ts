@@ -199,18 +199,23 @@ describe('browser-pool persistent profile (userDataDir) path — issue #161', ()
     state.persistentLaunchThrows = true;
 
     const pool = new MultiBrowserPool();
-    await expect(
-      pool.fetchWithBrowser('https://intranet.example', { userDataDir: '/tmp/wigolo-chrome-fail' }),
-    ).rejects.toThrow(/persistent launch boom/);
+    try {
+      await expect(
+        pool.fetchWithBrowser('https://intranet.example', { userDataDir: '/tmp/wigolo-chrome-fail' }),
+      ).rejects.toThrow(/persistent launch boom/);
 
-    // With limit=1, a leaked slot would hang the next dedicated fetch.
-    state.persistentLaunchThrows = false;
-    const result = await pool.fetchWithBrowser('https://intranet.example', {
-      userDataDir: '/tmp/wigolo-chrome-ok',
-    });
-    expect(result.method).toBe('browser');
-
-    delete process.env.MAX_BROWSERS;
-    await pool.shutdown();
+      // With limit=1, a leaked slot would hang the next dedicated fetch.
+      state.persistentLaunchThrows = false;
+      const result = await pool.fetchWithBrowser('https://intranet.example', {
+        userDataDir: '/tmp/wigolo-chrome-ok',
+      });
+      expect(result.method).toBe('browser');
+    } finally {
+      // In a finally so a failed assertion cannot leak MAX_BROWSERS=1 into the
+      // rest of the file.
+      delete process.env.MAX_BROWSERS;
+      resetConfig();
+      await pool.shutdown();
+    }
   });
 });
