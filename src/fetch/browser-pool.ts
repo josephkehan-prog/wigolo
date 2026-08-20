@@ -145,6 +145,15 @@ export class ChallengeBlockedError extends Error {
 export interface BrowserFetchOptions {
   timeoutMs?: number;
   storageStatePath?: string;
+  /**
+   * Temp Chrome-profile copy (made by getAuthOptions via profile-copy.ts).
+   * Consumed as a DEDICATED `launchPersistentContext` so the profile's
+   * cookies/logins are presented to the site. The context is closed at
+   * end-of-fetch; the CALLER owns the copy and removes it afterwards.
+   * `cdpUrl` takes precedence when both are set; this path in turn takes
+   * precedence over the hosted scraping-browser rung, which cannot present a
+   * local profile's cookies.
+   */
   userDataDir?: string;
   headers?: Record<string, string>;
   screenshot?: boolean;
@@ -660,12 +669,18 @@ export class MultiBrowserPool {
     // acquire/launch path below is entirely unchanged. The connector itself
     // owns the P8 scheme-guard + credential redaction; a bad scheme / connect
     // failure returns null so we fall through to the normal browser tier.
-    const scrapingWss = !options.cdpUrl ? config.scrapingBrowserWss : null;
+    // An authenticated profile fetch (`userDataDir`) also skips the rung: a
+    // hosted remote browser cannot present the local profile's cookies, so
+    // routing there would silently run the fetch logged out.
+    const scrapingWss = !options.cdpUrl && !options.userDataDir ? config.scrapingBrowserWss : null;
 
     // Stealth applies only to the launch path — the CDP path connects to an
     // external browser that owns its own fingerprint. The hosted scraping-browser
     // rung is likewise external, so it also disables the local stealth launch.
-    const useStealth = options.stealth === true && !options.cdpUrl && !scrapingWss;
+    // The persistent-profile path must present the profile's own fingerprint,
+    // not a hardened one, so it opts out too.
+    const useStealth =
+      options.stealth === true && !options.cdpUrl && !scrapingWss && !options.userDataDir;
 
     if (options.cdpUrl) {
       // CDP is always Chromium
@@ -681,6 +696,37 @@ export class MultiBrowserPool {
           error: err instanceof Error ? err.message : String(err),
         });
         ctx = await this.acquireForType(resolvedType);
+      }
+    } else if (options.userDataDir) {
+      // Authenticated profile fetch (WIGOLO_CHROME_PROFILE_PATH): launch a
+      // DEDICATED persistent context from the temp profile copy so the
+      // profile's cookies/logins are actually presented to the site. A
+      // Chrome-format profile is Chromium-only. launchPersistentContext owns
+      // its browser process (no separate Browser handle), so closing the
+      // context in the finally tears everything down; the CALLER owns the temp
+      // copy and removes it after this fetch settles (see profile-copy.ts).
+      // Bounded by the same dedicated-path semaphore as stealth so a burst of
+      // authenticated fetches cannot exceed the browser cap.
+      resolvedType = 'chromium';
+      await this.acquireStealthSlot();
+      stealthSlotHeld = true;
+      dedicated = true;
+      log.debug('fetching with browser (persistent profile context)', { url, userDataDir: options.userDataDir });
+      try {
+        const cfgProfile = getConfig();
+        const proxy = playwrightProxyOption(cfgProfile.proxyUrl, cfgProfile.useProxy);
+        ctx = await chromium.launchPersistentContext(options.userDataDir, {
+          headless: true,
+          acceptDownloads: true,
+          env: sanitizedChildEnv({ stripProxy: true }),
+          ...(proxy ? { proxy } : {}),
+        });
+      } catch (err) {
+        // Free the slot before rethrowing so N launch failures cannot exhaust
+        // the semaphore (mirrors the stealth setup error path below).
+        this.releaseStealthSlot();
+        stealthSlotHeld = false;
+        throw err;
       }
     } else if (scrapingWss) {
       // Hosted scraping-browser rung (opt-in). Reuse the P8 connector: it
