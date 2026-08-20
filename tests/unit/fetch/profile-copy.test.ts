@@ -83,60 +83,77 @@ describe('profile-copy', () => {
     }
   });
 
-  it('sweepStaleTempProfiles removes a copy stranded by an earlier run', async () => {
-    // Simulates the crash case: a copy made by a process that died before its
-    // removeTempProfile ran, aged past the staleness cutoff.
-    const stranded = mkdtempSync(join(tmpdir(), TEMP_PROFILE_PREFIX));
-    madeCopies.push(stranded);
-    writeFileSync(join(stranded, 'Cookies'), 'cookie-bytes');
-    const old = new Date(Date.now() - STALE_PROFILE_AGE_MS - 60_000);
-    utimesSync(stranded, old, old);
+  // The sweep scans os.tmpdir(), which every other test worker shares — and a
+  // worker's own lazy sweep would happily eat a stranded fixture out from under
+  // these assertions. os.tmpdir() re-reads the environment on every call, so
+  // pointing it at a private root per test makes the scan hermetic.
+  describe('sweepStaleTempProfiles', () => {
+    const TMP_ENV_KEYS = ['TMPDIR', 'TEMP', 'TMP'] as const;
+    let sweepRoot: string;
+    let savedTmpEnv: Record<string, string | undefined>;
 
-    const removed = await sweepStaleTempProfiles();
-
-    expect(removed).toBeGreaterThanOrEqual(1);
-    expect(existsSync(stranded)).toBe(false);
-  });
-
-  it('sweepStaleTempProfiles leaves a FRESH copy alone', async () => {
-    const fresh = mkdtempSync(join(tmpdir(), TEMP_PROFILE_PREFIX));
-    madeCopies.push(fresh);
-    writeFileSync(join(fresh, 'Cookies'), 'cookie-bytes');
-
-    await sweepStaleTempProfiles();
-
-    expect(existsSync(fresh)).toBe(true);
-  });
-
-  it('sweepStaleTempProfiles never removes a copy this process is still using', async () => {
-    // An in-flight fetch can outlive the age cutoff (a long crawl, a stalled
-    // navigation). The live copy is tracked in-process and must be skipped
-    // even when its mtime says stale.
-    const live = await copyProfileToTemp(sourceDir);
-    madeCopies.push(live);
-    const old = new Date(Date.now() - STALE_PROFILE_AGE_MS - 60_000);
-    utimesSync(live, old, old);
-
-    await sweepStaleTempProfiles();
-
-    expect(existsSync(live)).toBe(true);
-    expect(existsSync(join(live, 'Cookies'))).toBe(true);
-
-    // ...and once the fetch settles and the copy is released, it is sweepable.
-    await removeTempProfile(live);
-    expect(existsSync(live)).toBe(false);
-  });
-
-  it('sweepStaleTempProfiles ignores unrelated temp directories', async () => {
-    const unrelated = mkdtempSync(join(tmpdir(), 'wigolo-profile-src-'));
-    const old = new Date(Date.now() - STALE_PROFILE_AGE_MS - 60_000);
-    utimesSync(unrelated, old, old);
-
-    try {
-      await sweepStaleTempProfiles();
-      expect(existsSync(unrelated)).toBe(true);
-    } finally {
-      rmSync(unrelated, { recursive: true, force: true });
+    /** Age a directory past the staleness cutoff. */
+    function makeStale(dir: string): void {
+      const old = new Date(Date.now() - STALE_PROFILE_AGE_MS - 60_000);
+      utimesSync(dir, old, old);
     }
+
+    beforeEach(() => {
+      sweepRoot = mkdtempSync(join(tmpdir(), 'wigolo-sweep-root-'));
+      savedTmpEnv = Object.fromEntries(TMP_ENV_KEYS.map(k => [k, process.env[k]]));
+      for (const k of TMP_ENV_KEYS) process.env[k] = sweepRoot;
+      expect(tmpdir()).toBe(sweepRoot);
+    });
+
+    afterEach(() => {
+      for (const k of TMP_ENV_KEYS) {
+        if (savedTmpEnv[k] === undefined) delete process.env[k];
+        else process.env[k] = savedTmpEnv[k];
+      }
+      rmSync(sweepRoot, { recursive: true, force: true });
+    });
+
+    it('removes a copy stranded by an earlier run', async () => {
+      // The crash case: a copy whose owning process died before its
+      // removeTempProfile ran, now aged past the cutoff.
+      const stranded = mkdtempSync(join(sweepRoot, TEMP_PROFILE_PREFIX));
+      writeFileSync(join(stranded, 'Cookies'), 'cookie-bytes');
+      makeStale(stranded);
+
+      await expect(sweepStaleTempProfiles()).resolves.toBe(1);
+      expect(existsSync(stranded)).toBe(false);
+    });
+
+    it('leaves a FRESH copy alone', async () => {
+      const fresh = mkdtempSync(join(sweepRoot, TEMP_PROFILE_PREFIX));
+      writeFileSync(join(fresh, 'Cookies'), 'cookie-bytes');
+
+      await expect(sweepStaleTempProfiles()).resolves.toBe(0);
+      expect(existsSync(fresh)).toBe(true);
+    });
+
+    it('never removes a copy this process is still using', async () => {
+      // An in-flight fetch can outlive the cutoff (a long crawl, a stalled
+      // navigation). The live copy is tracked in-process and must be skipped
+      // even once its mtime reads stale.
+      const live = await copyProfileToTemp(sourceDir);
+      makeStale(live);
+
+      await expect(sweepStaleTempProfiles()).resolves.toBe(0);
+      expect(existsSync(live)).toBe(true);
+      expect(existsSync(join(live, 'Cookies'))).toBe(true);
+
+      // ...and once the fetch settles and releases it, it becomes sweepable.
+      await removeTempProfile(live);
+      expect(existsSync(live)).toBe(false);
+    });
+
+    it('ignores unrelated temp directories', async () => {
+      const unrelated = mkdtempSync(join(sweepRoot, 'wigolo-profile-src-'));
+      makeStale(unrelated);
+
+      await expect(sweepStaleTempProfiles()).resolves.toBe(0);
+      expect(existsSync(unrelated)).toBe(true);
+    });
   });
 });
